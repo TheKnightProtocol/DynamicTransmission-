@@ -5,94 +5,56 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import accuracy_score, classification_report
+from sklearn.metrics import accuracy_score
 
-# ----------------------------
+# -----------------------------
 # Load Dataset
-# ----------------------------
+# -----------------------------
+df = pd.read_csv("ai4i2020.csv")
 
-DATA_PATH = "data/ai4i2020.csv"
+print(df.head())
 
-df = pd.read_csv(DATA_PATH)
+# Remove unnecessary columns
+drop_cols = ["UDI", "Product ID", "Type"]
 
-print("Dataset Shape:", df.shape)
-
-# ----------------------------
-# Remove Unnecessary Columns
-# ----------------------------
-
-drop_cols = []
-
-for col in ["UDI", "Product ID", "Type"]:
-
+for col in drop_cols:
     if col in df.columns:
-        drop_cols.append(col)
+        df.drop(columns=col, inplace=True)
 
-df = df.drop(columns=drop_cols)
+X = df.drop(columns=["Machine failure"])
+y = df["Machine failure"]
 
-# ----------------------------
-# Target Column
-# ----------------------------
-
-TARGET = "Machine failure"
-
-X = df.drop(columns=[TARGET])
-
-y = df[TARGET]
-
-# ----------------------------
-# Split
-# ----------------------------
-
+# Train-Test Split
 X_train, X_test, y_train, y_test = train_test_split(
     X,
     y,
-    test_size=0.20,
+    test_size=0.2,
     random_state=42,
     stratify=y
 )
 
-# ----------------------------
-# Scale
-# ----------------------------
-
+# Scaling
 scaler = StandardScaler()
 
-X_train_scaled = scaler.fit_transform(X_train)
+X_train = scaler.fit_transform(X_train)
+X_test = scaler.transform(X_test)
 
-X_test_scaled = scaler.transform(X_test)
-
-# ----------------------------
-# Model
-# ----------------------------
-
+# Random Forest
 model = RandomForestClassifier(
     n_estimators=300,
     random_state=42
 )
 
-model.fit(X_train_scaled, y_train)
+model.fit(X_train, y_train)
 
-pred = model.predict(X_test_scaled)
+pred = model.predict(X_test)
 
-print()
+print("Accuracy :", accuracy_score(y_test, pred))
 
-print("Accuracy:", accuracy_score(y_test, pred))
-
-print()
-
-print(classification_report(y_test, pred))
-
-# ----------------------------
 # Save
-# ----------------------------
-
 os.makedirs("models", exist_ok=True)
 
 joblib.dump(model, "models/random_forest.pkl")
-
 joblib.dump(scaler, "models/scaler.pkl")
 
-print()
-
-print("Models Saved Successfully!")
+print("\nModel Saved Successfully")
