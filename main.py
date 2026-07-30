@@ -1,37 +1,57 @@
 import streamlit as st
 import pandas as pd
-import numpy as np
-import joblib
 from pathlib import Path
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestClassifier
 
-# -----------------------------
-# Locate Project Directory
-# -----------------------------
+# ----------------------------------------------------
+# Locate Dataset
+# ----------------------------------------------------
+
 BASE_DIR = Path(__file__).resolve().parent
 
-MODEL_PATH = BASE_DIR / "models" / "random_forest.pkl"
-SCALER_PATH = BASE_DIR / "models" / "scaler.pkl"
+# Change this if your CSV is somewhere else
+DATA_PATH = BASE_DIR / "data" / "ai4i2020.csv"
 
-# -----------------------------
-# Load Model & Scaler
-# -----------------------------
+# ----------------------------------------------------
+# Train Model Automatically
+# ----------------------------------------------------
+
 @st.cache_resource
-def load_model():
+def train_model():
 
-    if not MODEL_PATH.exists():
-        st.error(f"❌ Model file not found:\n{MODEL_PATH}")
-        st.info("Run train_model.py first to generate random_forest.pkl")
+    if not DATA_PATH.exists():
+        st.error(f"Dataset not found:\n{DATA_PATH}")
+        st.info("Place ai4i2020.csv inside the data folder.")
         st.stop()
 
-    if not SCALER_PATH.exists():
-        st.error(f"❌ Scaler file not found:\n{SCALER_PATH}")
-        st.info("Run train_model.py first to generate scaler.pkl")
-        st.stop()
+    df = pd.read_csv(DATA_PATH)
 
-    model = joblib.load(MODEL_PATH)
-    scaler = joblib.load(SCALER_PATH)
+    # Remove unnecessary columns
+    for col in ["UDI", "Product ID", "Type"]:
+        if col in df.columns:
+            df.drop(columns=col, inplace=True)
 
-    return model, scaler
+    X = df.drop(columns=["Machine failure"])
+    y = df["Machine failure"]
 
-# Load once and cache
-model, scaler = load_model()
+    X_train, _, y_train, _ = train_test_split(
+        X,
+        y,
+        test_size=0.20,
+        random_state=42,
+        stratify=y
+    )
+
+    model = RandomForestClassifier(
+        n_estimators=300,
+        random_state=42,
+        n_jobs=-1
+    )
+
+    model.fit(X_train, y_train)
+
+    return model
+
+# Load Model
+model = train_model()
