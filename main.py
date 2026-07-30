@@ -1,3 +1,15 @@
+import streamlit as st
+import pandas as pd
+import numpy as np
+import plotly.express as px
+import plotly.graph_objects as go
+
+from pathlib import Path
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import train_test_split
+
+
+
 Dynamic Transmission AI
 Current directory: /mount/src/dynamictransmission-
 
