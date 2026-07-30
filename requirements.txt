@@ -1,0 +1,45 @@
+# Core Data Science
+numpy==1.26.4
+pandas==2.2.2
+scipy==1.13.1
+
+# Machine Learning
+scikit-learn==1.5.1
+xgboost==2.1.1
+lightgbm==4.5.0
+catboost==1.2.7
+joblib==1.4.2
+
+# Visualization
+matplotlib==3.9.2
+plotly==5.24.1
+
+# Explainable AI
+shap==0.46.0
+
+# Dashboard
+streamlit==1.38.0
+
+# Backend API
+fastapi==0.115.0
+uvicorn==0.30.6
+
+# PDF Reports
+reportlab==4.2.2
+
+# Image Processing
+Pillow==10.4.0
+
+# Utilities
+tqdm==4.66.5
+requests==2.32.3
+python-dotenv==1.0.1
+
+# Excel Support
+openpyxl==3.1.5
+
+# YAML Config
+PyYAML==6.0.2
+
+# Logging
+loguru==0.7.2
